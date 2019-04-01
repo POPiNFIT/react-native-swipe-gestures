@@ -4,16 +4,13 @@ import React, {Component} from 'react';
 import {View, PanResponder} from 'react-native';
 
 export const swipeDirections = {
-  SWIPE_UP: 'SWIPE_UP',
-  SWIPE_DOWN: 'SWIPE_DOWN',
   SWIPE_LEFT: 'SWIPE_LEFT',
   SWIPE_RIGHT: 'SWIPE_RIGHT'
 };
 
 const swipeConfig = {
   velocityThreshold: 0.3,
-  directionalOffsetThreshold: 80,
-  gestureIsClickThreshold: 5
+  directionalOffsetThreshold: 80
 };
 
 function isValidSwipe(velocity, velocityThreshold, directionalOffset, directionalOffsetThreshold) {
@@ -47,8 +44,7 @@ class GestureRecognizer extends Component {
   }
   
   _gestureIsClick(gestureState) {
-    return Math.abs(gestureState.dx) < swipeConfig.gestureIsClickThreshold
-      && Math.abs(gestureState.dy) < swipeConfig.gestureIsClickThreshold;
+    return Math.abs(gestureState.dx) < 5;
   }
 
   _handlePanResponderEnd(evt, gestureState) {
@@ -57,8 +53,8 @@ class GestureRecognizer extends Component {
   }
 
   _triggerSwipeHandlers(swipeDirection, gestureState) {
-    const {onSwipe, onSwipeUp, onSwipeDown, onSwipeLeft, onSwipeRight} = this.props;
-    const {SWIPE_LEFT, SWIPE_RIGHT, SWIPE_UP, SWIPE_DOWN} = swipeDirections;
+    const {onSwipe, onSwipeLeft, onSwipeRight} = this.props;
+    const {SWIPE_LEFT, SWIPE_RIGHT,} = swipeDirections;
     onSwipe && onSwipe(swipeDirection, gestureState);
     switch (swipeDirection) {
       case SWIPE_LEFT:
@@ -67,27 +63,17 @@ class GestureRecognizer extends Component {
       case SWIPE_RIGHT:
         onSwipeRight && onSwipeRight(gestureState);
         break;
-      case SWIPE_UP:
-        onSwipeUp && onSwipeUp(gestureState);
-        break;
-      case SWIPE_DOWN:
-        onSwipeDown && onSwipeDown(gestureState);
-        break;
     }
   }
 
   _getSwipeDirection(gestureState) {
-    const {SWIPE_LEFT, SWIPE_RIGHT, SWIPE_UP, SWIPE_DOWN} = swipeDirections;
-    const {dx, dy} = gestureState;
+    const {SWIPE_LEFT, SWIPE_RIGHT} = swipeDirections;
+    const {dx} = gestureState;
     if (this._isValidHorizontalSwipe(gestureState)) {
       return (dx > 0)
         ? SWIPE_RIGHT
         : SWIPE_LEFT;
-    } else if (this._isValidVerticalSwipe(gestureState)) {
-      return (dy > 0)
-        ? SWIPE_DOWN
-        : SWIPE_UP;
-    }
+    } 
     return null;
   }
 
